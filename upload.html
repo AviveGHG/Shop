@@ -23,7 +23,7 @@
 </form>
 </main>
 <script>
-const API="hello-world.avivehdddd-75f.workers.dev/"; // Nach dem Worker-Deploy hier ersetzen.
+const API="https://hello-world.avivehdddd-75f.workers.dev/"; // Nach dem Worker-Deploy hier ersetzen.
 const form=document.querySelector("#form"),file=document.querySelector("#file"),fn=document.querySelector("#filename"),status=document.querySelector("#status"),btn=document.querySelector("#submit");
 file.onchange=()=>fn.textContent=file.files[0]?.name||"Noch keine Datei ausgewÃ¤hlt";
 form.onsubmit=async e=>{
