@@ -2,126 +2,199 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Admin - Überprüfung</title>
+<title>Admin-Bereich</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
-:root{--bg:#080809;--card:rgba(28,28,30,.75);--text:#f5f5f7;--muted:#98989f;--accent:#2997ff;--border:rgba(255,255,255,.08);--danger:#ff453a;--success:#30d158}
-*{box-sizing:border-box}body{margin:0;font-family:Inter,-apple-system,sans-serif;color:var(--text);background:var(--bg);min-height:100vh;padding:40px 20px}
-.wrap{max-width:800px;margin:auto}.login-card,.card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:30px;backdrop-filter:blur(20px)}
-h1{font-size:28px;margin:0 0 20px;display:flex;justify-content:space-between;align-items:center}
-input,select{width:100%;padding:14px;border:1px solid var(--border);border-radius:12px;background:#1c1c1e;color:#fff;font:inherit;margin-bottom:15px;outline:0}
-button{padding:12px 20px;border-radius:12px;border:0;font-weight:700;cursor:pointer;transition:.2s}
-.btn-p{background:var(--accent);color:#fff}.btn-d{background:var(--danger);color:#fff}.btn-s{background:var(--success);color:#fff}.btn-sec{background:#2c2c2e;color:#fff}
-.item{border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:15px;background:rgba(255,255,255,.02);display:flex;justify-content:space-between;align-items:center;gap:15px}
-.details{flex:1}.details h3{margin:0 0 6px;font-size:18px}.details p{margin:0 0 8px;color:var(--muted);font-size:14px}.meta{font-size:12px;color:var(--muted)}
-.actions{display:flex;gap:8px;align-items:center}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;place-items:center;z-index:100}
-.modal-content{background:#1c1c1e;border:1px solid var(--border);border-radius:20px;padding:25px;width:min(400px,90%)}
+body{font-family:'Inter',sans-serif;background:#080809;color:#f5f5f7;margin:0;padding:30px}
+.wrap{max-width:900px;margin:auto}
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:25px}
+h1{font-size:26px;margin:0;display:flex;align-items:center;gap:10px}
+.tabs{display:flex;gap:10px;margin-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1);padding-bottom:12px}
+.tab-btn{background:transparent;border:0;color:#98989f;font-weight:600;padding:10px 16px;border-radius:10px;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:14px;transition:.2s}
+.tab-btn.active{background:#1c1c1e;color:#fff}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.card{background:rgba(28,28,30,.7);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:22px;margin-bottom:20px;backdrop-filter:blur(20px)}
+label{display:block;font-size:12px;color:#98989f;margin:12px 0 4px;font-weight:600}
+input,textarea,select{width:100%;padding:11px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:#1c1c1e;color:#fff;font:inherit;box-sizing:border-box}
+textarea{resize:vertical;height:65px}
+button.submit{background:#0071e3;color:#fff;border:0;padding:13px 20px;border-radius:10px;font-weight:700;cursor:pointer;margin-top:18px;width:100%;transition:.2s}
+button.submit:hover{background:#2997ff}
+.status{margin-top:10px;font-size:13px;color:#34c759;display:none;text-align:center}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin-bottom:20px}
+.stat-box{background:#1c1c1e;padding:15px;border-radius:12px;border:1px solid rgba(255,255,255,.05);text-align:center}
+.stat-box h3{margin:0;font-size:28px;color:#0071e3}
+.stat-box p{margin:5px 0 0;font-size:12px;color:#98989f}
+.lock-banner{background:#ff3b3022;border:1px solid #ff3b3044;color:#ff453a;padding:12px;border-radius:12px;font-size:13px;display:flex;align-items:center;gap:10px;margin-bottom:15px}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div id="loginSection" class="login-card">
-    <h1>Admin Login</h1>
-    <input type="password" id="passInput" placeholder="Passwort eingeben...">
-    <button class="btn-p" onclick="login()">Anmelden</button>
-  </div>
+ <header>
+  <h1>📊 Admin Panel</h1>
+  <a href="../" style="color:#0071e3;text-decoration:none;font-weight:600;font-size:13px">← Zum Store</a>
+ </header>
 
-  <div id="adminSection" style="display:none">
-    <h1>Überprüfung <button class="btn-sec" onclick="logout()">Abmelden</button></h1>
-    <div id="list">Lade Einsendungen...</div>
-  </div>
-</div>
+ <!-- TAB NAVIGATION -->
+ <div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('dashboard')">📖 Dashboard</button>
+  <button class="tab-btn" onclick="switchTab('edit')">✏️ Kurzbefehle Bearbeiten</button>
+  <button class="tab-btn" onclick="switchTab('access')">🔒 Sperren & Berechtigungen</button>
+ </div>
 
-<div class="modal" id="rejectModal">
-  <div class="modal-content">
-    <h3>Grund für Ablehnung</h3>
-    <select id="reasonSelect">
-      <option value="Rassismus / Diskriminierung">Rassismus / Diskriminierung</option>
-      <option value="Beleidigung / Hate Speech">Beleidigung / Hate Speech</option>
-      <option value="Schadsoftware / Gefährlich">Schadsoftware / Gefährlich</option>
-      <option value="Irreführende Beschreibung">Irreführende Beschreibung</option>
-      <option value="Sonstiges">Sonstiges</option>
-    </select>
-    <input type="text" id="customReason" placeholder="Eigener Grund (optional)...">
-    <div style="display:flex;gap:10px;justify-content:flex-end">
-      <button class="btn-sec" onclick="closeRejectModal()">Abbrechen</button>
-      <button class="btn-d" onclick="confirmReject()">Sperren & Ablehnen</button>
-    </div>
+ <!-- TAB 1: DASHBOARD -->
+ <div id="tab-dashboard" class="tab-content active">
+  <div class="card">
+   <h2>📖 Dashboard Übersicht</h2>
+   <p style="color:#98989f;font-size:14px">Willkommen im Admin-Bereich. Hier hast du die wichtigsten Statistiken auf einen Blick.</p>
+   
+   <div class="stats-grid">
+    <div class="stat-box"><h3 id="statTotal">0</h3><p>Gesamte Kurzbefehle</p></div>
+    <div class="stat-box"><h3 id="statOverridden">0</h3><p>Manuell Angepasst</p></div>
+    <div class="stat-box"><h3>Aktiv</h3><p>System-Status</p></div>
+   </div>
   </div>
+ </div>
+
+ <!-- TAB 2: KURZBEFEHLE BEARBEITEN -->
+ <div id="tab-edit" class="tab-content">
+  <div class="card">
+   <h2>✏️ Name, Beschreibung & Icon anpassen</h2>
+   <label for="shortcutSelect">Kurzbefehl auswählen:</label>
+   <select id="shortcutSelect"><option>Lade Kurzbefehle...</option></select>
+   
+   <label for="inputName">Name ändern:</label>
+   <input id="inputName" placeholder="Z. B. Auto Clean">
+   
+   <label for="inputDesc">Beschreibung ändern:</label>
+   <textarea id="inputDesc" placeholder="Was macht der Kurzbefehl?"></textarea>
+   
+   <label for="inputEmoji">Haupt-Icon / Emoji:</label>
+   <input id="inputEmoji" placeholder="Z. B. 🧹 oder ⚡">
+   
+   <label for="inputCreator">Ersteller:</label>
+   <input id="inputCreator" placeholder="Z. B. jonas">
+   
+   <label for="inputAvatar">Profilbild / Avatar (Bild-URL oder Initialen/Emoji):</label>
+   <input id="inputAvatar" placeholder="Z. B. https://site.de/avatar.jpg oder 🚀">
+   
+   <button class="submit" id="saveBtn">Änderungen Speichern</button>
+   <div class="status" id="status">Änderungen wurden erfolgreich gespeichert!</div>
+  </div>
+ </div>
+
+ <!-- TAB 3: SPPERREN & BERECHTIGUNGEN -->
+ <div id="tab-access" class="tab-content">
+  <div class="card">
+   <h2>🔒 Zugriff & Sperren verwalten</h2>
+   <div class="lock-banner">
+    <span>⚠️</span>
+    <div>Sperre Kurzbefehle oder bestimmte Aktionen für normale Nutzer.</div>
+   </div>
+   
+   <label for="lockSelect">Kurzbefehl zum Sperren wählen:</label>
+   <select id="lockSelect"><option>Lade Kurzbefehle...</option></select>
+   
+   <label style="display:flex;align-items:center;gap:10px;margin-top:15px;cursor:pointer;color:#fff">
+    <input type="checkbox" id="checkLock" style="width:auto"> <b>Kurzbefehl im Store sperren (Verstecken/Deaktivieren)</b>
+   </label>
+
+   <button class="submit" id="saveLockBtn">Sperr-Status Speichern</button>
+   <div class="status" id="statusLock">Sperr-Einstellungen gespeichert!</div>
+  </div>
+ </div>
+
 </div>
 
 <script>
-const API = "https://hello-world.avivehdddd-75f.workers.dev";
-let pw = localStorage.getItem("adm_pw") || "", currentRejectId = null;
+let files = [], overrides = {};
+const sel = document.getElementById("shortcutSelect");
+const lockSel = document.getElementById("lockSelect");
 
-function login(){
-  pw = document.querySelector("#passInput").value;
-  localStorage.setItem("adm_pw", pw);
-  loadList();
+function switchTab(tabId){
+ document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+ document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+ event.currentTarget.classList.add('active');
+ document.getElementById('tab-' + tabId).classList.add('active');
 }
-function logout(){ localStorage.removeItem("adm_pw"); location.reload(); }
 
-async function loadList(){
-  const r = await fetch(`${API}/submissions`, { headers: { "Authorization": `Bearer ${pw}` } });
-  if(!r.ok){ alert("Falsches Passwort oder Fehler."); logout(); return; }
-  document.querySelector("#loginSection").style.display = "none";
-  document.querySelector("#adminSection").style.display = "block";
+async function init(){
+ try {
+  const rFiles = await fetch("../shortcuts.json");
+  files = await rFiles.json();
   
-  const data = await r.json();
-  const list = document.querySelector("#list");
-  if(!data.submissions.length){ list.innerHTML = "<p style='color:var(--muted)'>Keine offenen Einsendungen.</p>"; return; }
+  const rOver = await fetch("../overrides.json").catch(()=>({ok:false}));
+  if(rOver.ok) overrides = await rOver.json();
+
+  // Stats
+  document.getElementById("statTotal").textContent = files.length;
+  document.getElementById("statOverridden").textContent = Object.keys(overrides).length;
+
+  sel.innerHTML = files.map(f => `<option value="${f}">${f}</option>`).join("");
+  lockSel.innerHTML = files.map(f => `<option value="${f}">${f}</option>`).join("");
   
-  list.innerHTML = data.submissions.map(x => `
-    <div class="item">
-      <div class="details">
-        <h3>${esc(x.name)}</h3>
-        <p>${esc(x.description)}</p>
-        <div class="meta">Von: <b>${esc(x.creator)}</b> | IP: ${esc(x.ip || "Unbekannt")}</div>
-      </div>
-      <div class="actions">
-        <button class="btn-sec" onclick="downloadFile('${x.id}')">Datei</button>
-        <button class="btn-s" onclick="approve('${x.id}')">✓ Genehmigen</button>
-        <button class="btn-d" onclick="openRejectModal('${x.id}')">✕ Ablehnen</button>
-      </div>
-    </div>
-  `).join("");
+  loadFields();
+  loadLockFields();
+ } catch(e){}
 }
 
-async function downloadFile(id){
-  const res = await fetch(`${API}/download/${id}`, { headers: { "Authorization": `Bearer ${pw}` } });
-  if(!res.ok) return alert("Download fehlgeschlagen");
-  const blob = await res.blob();
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = `${id}.shortcut`;
-  a.click();
+function loadFields(){
+ const file = sel.value;
+ const ov = overrides[file] || {};
+ let parts = file.replace(/\.shortcut$/i,"").split(" - ");
+ 
+ document.getElementById("inputName").value = ov.name || parts[0] || "";
+ document.getElementById("inputDesc").value = ov.desc || parts[1] || "";
+ document.getElementById("inputEmoji").value = ov.emoji || parts[2] || "⚙️";
+ document.getElementById("inputCreator").value = ov.creator || parts[3] || "Unbekannt";
+ document.getElementById("inputAvatar").value = ov.avatar || "";
 }
 
-async function approve(id){
-  if(!confirm("Einsendung genehmigen?")) return;
-  const res = await fetch(`${API}/approve/${id}`, { method: "POST", headers: { "Authorization": `Bearer ${pw}` } });
-  if(res.ok){ alert("Genehmigt!"); loadList(); } else alert("Fehler beim Genehmigen");
+function loadLockFields(){
+ const file = lockSel.value;
+ const ov = overrides[file] || {};
+ document.getElementById("checkLock").checked = !!ov.locked;
 }
 
-function openRejectModal(id){ currentRejectId = id; document.querySelector("#rejectModal").style.display = "grid"; }
-function closeRejectModal(){ currentRejectId = null; document.querySelector("#rejectModal").style.display = "none"; }
+sel.onchange = loadFields;
+lockSel.onchange = loadLockFields;
 
-async function confirmReject(){
-  const sel = document.querySelector("#reasonSelect").value;
-  const custom = document.querySelector("#customReason").value.trim();
-  const reason = custom || sel;
-  
-  const res = await fetch(`${API}/reject/${currentRejectId}`, {
-    method: "POST",
-    headers: { "Authorization": `Bearer ${pw}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ reason })
+document.getElementById("saveBtn").onclick = async () => {
+ const file = sel.value;
+ overrides[file] = overrides[file] || {};
+ Object.assign(overrides[file], {
+  name: document.getElementById("inputName").value,
+  desc: document.getElementById("inputDesc").value,
+  emoji: document.getElementById("inputEmoji").value,
+  creator: document.getElementById("inputCreator").value,
+  avatar: document.getElementById("inputAvatar").value
+ });
+ await saveOverrides("status");
+};
+
+document.getElementById("saveLockBtn").onclick = async () => {
+ const file = lockSel.value;
+ overrides[file] = overrides[file] || {};
+ overrides[file].locked = document.getElementById("checkLock").checked;
+ await saveOverrides("statusLock");
+};
+
+async function saveOverrides(statusId){
+ try {
+  await fetch("save_overrides.php", {
+   method: "POST",
+   headers: {"Content-Type": "application/json"},
+   body: JSON.stringify(overrides)
   });
-  if(res.ok){ alert("Einsendung abgelehnt und IP gesperrt."); closeRejectModal(); loadList(); } else alert("Fehler beim Ablehnen");
+  const st = document.getElementById(statusId);
+  st.style.display = "block";
+  setTimeout(()=> st.style.display = "none", 2000);
+ } catch(e){
+  alert("Fehler beim Speichern!");
+ }
 }
 
-function esc(s){ return String(s||"").replace(/[&<>"']/g, ""); }
-if(pw) loadList();
+init();
 </script>
 </body>
 </html>
