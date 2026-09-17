@@ -11,31 +11,31 @@
 </style>
 </head>
 <body><main class="box">
-<a class="back" href="index.html">â ZurÃ¼ck zum Store</a>
-<div class="badge">Kurzbefehl einreichen</div><h1>Dein Kurzbefehl.</h1><p>Lade eine <b>.shortcut</b>-Datei hoch und gib die Informationen dazu an. Die Einsendung wird zunÃ¤chst geprÃ¼ft.</p>
+<a class="back" href="index.html">← Zurück zum Store</a>
+<div class="badge">Kurzbefehl einreichen</div><h1>Dein Kurzbefehl.</h1><p>Lade eine <b>.shortcut</b>-Datei hoch und gib die Informationen dazu an. Die Einsendung wird zunächst geprüft.</p>
 <form id="form">
-<div class="field"><label>Kurzbefehl</label><label class="drop" for="file">ð<br><br>Datei auswÃ¤hlen<input id="file" type="file" accept=".shortcut,application/octet-stream" required><div class="file" id="filename">Noch keine Datei ausgewÃ¤hlt</div></label><div class="hint">Nur Apple-Kurzbefehle (.shortcut), maximal 10 MB.</div></div>
+<div class="field"><label>Kurzbefehl</label><label class="drop" for="file">📁<br><br>Datei auswählen<input id="file" type="file" accept=".shortcut,application/octet-stream" required><div class="file" id="filename">Noch keine Datei ausgewählt</div></label><div class="hint">Nur Apple-Kurzbefehle (.shortcut), maximal 10 MB.</div></div>
 <div class="field"><label for="name">Name</label><input id="name" maxlength="80" required placeholder="z. B. Wetter Check"></div>
 <div class="field"><label for="desc">Beschreibung</label><textarea id="desc" maxlength="300" required placeholder="Was macht der Kurzbefehl?"></textarea></div>
 <div class="field"><label for="creator">By / Ersteller</label><input id="creator" maxlength="40" required placeholder="z. B. Max"></div>
-<button class="submit" id="submit">Zur ÃberprÃ¼fung einsenden â</button>
+<button class="submit" id="submit">Zur Überprüfung einsenden →</button>
 <div id="status" class="status"></div>
 </form>
 </main>
 <script>
-const API="https://hello-world.avivehdddd-75f.workers.dev/"; // Nach dem Worker-Deploy hier ersetzen.
+const API="https://hello-world.avivehdddd-75f.workers.dev"; // Ohne Slash am Ende
 const form=document.querySelector("#form"),file=document.querySelector("#file"),fn=document.querySelector("#filename"),status=document.querySelector("#status"),btn=document.querySelector("#submit");
-file.onchange=()=>fn.textContent=file.files[0]?.name||"Noch keine Datei ausgewÃ¤hlt";
+file.onchange=()=>fn.textContent=file.files[0]?.name||"Noch keine Datei ausgewählt";
 form.onsubmit=async e=>{
  e.preventDefault();status.className="status";status.textContent="";
  if(API.includes("DEIN-WORKER")){status.className="status err";status.textContent="Der Upload-Server wurde noch nicht eingetragen. Trage die Worker-URL in upload.html ein.";return}
- const f=file.files[0]; if(!f||!f.name.toLowerCase().endsWith(".shortcut")){status.className="status err";status.textContent="Bitte eine .shortcut-Datei auswÃ¤hlen.";return}
- if(f.size>10*1024*1024){status.className="status err";status.textContent="Die Datei darf maximal 10 MB groÃ sein.";return}
- btn.disabled=true;btn.textContent="Wird eingesendetâ¦";
+ const f=file.files[0]; if(!f||!f.name.toLowerCase().endsWith(".shortcut")){status.className="status err";status.textContent="Bitte eine .shortcut-Datei auswählen.";return}
+ if(f.size>10*1024*1024){status.className="status err";status.textContent="Die Datei darf maximal 10 MB groß sein.";return}
+ btn.disabled=true;btn.textContent="Wird eingesendet…";
  try{let fd=new FormData();fd.append("file",f);fd.append("name",document.querySelector("#name").value);fd.append("description",document.querySelector("#desc").value);fd.append("creator",document.querySelector("#creator").value);
  let r=await fetch(API+"/submit",{method:"POST",body:fd});let d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||"Upload fehlgeschlagen");
- status.className="status ok";status.innerHTML="<b>â Erfolgreich eingereicht</b><br>Dein Kurzbefehl wurde zur ÃberprÃ¼fung gesendet. Die PrÃ¼fung erfolgt innerhalb von 24 Stunden.";form.reset();fn.textContent="Noch keine Datei ausgewÃ¤hlt";
- }catch(err){status.className="status err";status.textContent=err.message}finally{btn.disabled=false;btn.textContent="Zur ÃberprÃ¼fung einsenden â"}
+ status.className="status ok";status.innerHTML="<b>✓ Erfolgreich eingereicht</b><br>Dein Kurzbefehl wurde zur Überprüfung gesendet. Die Prüfung erfolgt innerhalb von 24 Stunden.";form.reset();fn.textContent="Noch keine Datei ausgewählt";
+ }catch(err){status.className="status err";status.textContent=err.message}finally{btn.disabled=false;btn.textContent="Zur Überprüfung einsenden →"}
 };
 </script>
 </body></html>
