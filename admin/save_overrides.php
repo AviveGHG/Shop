@@ -5,6 +5,6 @@ if ($data) {
     echo json_encode(["success" => true]);
 } else {
     http_response_code(400);
-    echo json_encode(["error" => "No data received"]);
+    echo json_encode(["error" => "Keine Daten empfangen"]);
 }
 ?>
