@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kurzbefehl einsenden</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+:root{--bg:#f5f5f7;--card:rgba(255,255,255,.72);--text:#111113;--muted:#74747a;--accent:#0071e3;--border:#00000012}
+@media(prefers-color-scheme:dark){:root{--bg:#080809;--card:#1c1c1eb8;--text:#f5f5f7;--muted:#98989f;--accent:#2997ff;--border:#ffffff14}}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif;color:var(--text);background:radial-gradient(circle at 10% 0%,#0071e31a,transparent 32%),radial-gradient(circle at 90% 15%,#5856d61a,transparent 30%),var(--bg);display:grid;place-items:center;padding:25px}.box{width:min(620px,100%);padding:34px;border:1px solid var(--border);border-radius:30px;background:var(--card);backdrop-filter:blur(25px);box-shadow:0 30px 90px #00000012}.back{color:var(--muted);text-decoration:none;font-size:12px}.badge{display:inline-block;margin-top:30px;padding:7px 11px;border-radius:999px;background:#0071e314;color:var(--accent);font-size:11px;font-weight:700}h1{font-size:40px;letter-spacing:-2px;margin:14px 0 10px}p{color:var(--muted);font-size:14px;line-height:1.6}.field{margin-top:18px}.field label{display:block;font-size:12px;font-weight:700;margin-bottom:8px}.field input,.field textarea{width:100%;padding:14px 15px;border:1px solid var(--border);border-radius:14px;background:#ffffff40;color:var(--text);outline:0;font:inherit}.field textarea{min-height:100px;resize:vertical}.drop{padding:28px;text-align:center;border:1px dashed #0071e366;border-radius:18px;background:#0071e30b;cursor:pointer;transition:.2s}.drop:hover{transform:translateY(-2px);background:#0071e314}.drop input{display:none}.file{margin-top:9px;color:var(--muted);font-size:11px}.hint{font-size:11px;color:var(--muted);margin-top:8px}.submit{width:100%;margin-top:24px;border:0;border-radius:15px;padding:15px;background:var(--accent);color:#fff;font:700 14px Inter;cursor:pointer;box-shadow:0 12px 30px #0071e33d;transition:.2s}.submit:hover{transform:translateY(-2px)}.submit:disabled{opacity:.55;cursor:wait}.status{display:none;margin-top:18px;padding:17px;border-radius:16px;font-size:13px;line-height:1.5}.ok{display:block;background:#34c75918;color:#17883a}.err{display:block;background:#ff3b3018;color:#c62820}
+</style>
+</head>
+<body><main class="box">
+<a class="back" href="index.html">â ZurÃ¼ck zum Store</a>
+<div class="badge">Kurzbefehl einreichen</div><h1>Dein Kurzbefehl.</h1><p>Lade eine <b>.shortcut</b>-Datei hoch und gib die Informationen dazu an. Die Einsendung wird zunÃ¤chst geprÃ¼ft.</p>
+<form id="form">
+<div class="field"><label>Kurzbefehl</label><label class="drop" for="file">ð<br><br>Datei auswÃ¤hlen<input id="file" type="file" accept=".shortcut,application/octet-stream" required><div class="file" id="filename">Noch keine Datei ausgewÃ¤hlt</div></label><div class="hint">Nur Apple-Kurzbefehle (.shortcut), maximal 10 MB.</div></div>
+<div class="field"><label for="name">Name</label><input id="name" maxlength="80" required placeholder="z. B. Wetter Check"></div>
+<div class="field"><label for="desc">Beschreibung</label><textarea id="desc" maxlength="300" required placeholder="Was macht der Kurzbefehl?"></textarea></div>
+<div class="field"><label for="creator">By / Ersteller</label><input id="creator" maxlength="40" required placeholder="z. B. Max"></div>
+<button class="submit" id="submit">Zur ÃberprÃ¼fung einsenden â</button>
+<div id="status" class="status"></div>
+</form>
+</main>
+<script>
+const API="hello-world.avivehdddd-75f.workers.dev/"; // Nach dem Worker-Deploy hier ersetzen.
+const form=document.querySelector("#form"),file=document.querySelector("#file"),fn=document.querySelector("#filename"),status=document.querySelector("#status"),btn=document.querySelector("#submit");
+file.onchange=()=>fn.textContent=file.files[0]?.name||"Noch keine Datei ausgewÃ¤hlt";
+form.onsubmit=async e=>{
+ e.preventDefault();status.className="status";status.textContent="";
+ if(API.includes("DEIN-WORKER")){status.className="status err";status.textContent="Der Upload-Server wurde noch nicht eingetragen. Trage die Worker-URL in upload.html ein.";return}
+ const f=file.files[0]; if(!f||!f.name.toLowerCase().endsWith(".shortcut")){status.className="status err";status.textContent="Bitte eine .shortcut-Datei auswÃ¤hlen.";return}
+ if(f.size>10*1024*1024){status.className="status err";status.textContent="Die Datei darf maximal 10 MB groÃ sein.";return}
+ btn.disabled=true;btn.textContent="Wird eingesendetâ¦";
+ try{let fd=new FormData();fd.append("file",f);fd.append("name",document.querySelector("#name").value);fd.append("description",document.querySelector("#desc").value);fd.append("creator",document.querySelector("#creator").value);
+ let r=await fetch(API+"/submit",{method:"POST",body:fd});let d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||"Upload fehlgeschlagen");
+ status.className="status ok";status.innerHTML="<b>â Erfolgreich eingereicht</b><br>Dein Kurzbefehl wurde zur ÃberprÃ¼fung gesendet. Die PrÃ¼fung erfolgt innerhalb von 24 Stunden.";form.reset();fn.textContent="Noch keine Datei ausgewÃ¤hlt";
+ }catch(err){status.className="status err";status.textContent=err.message}finally{btn.disabled=false;btn.textContent="Zur ÃberprÃ¼fung einsenden â"}
+};
+</script>
+</body></html>

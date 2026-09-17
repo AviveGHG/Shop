@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin · Kurzbefehle Store</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+:root{--bg:#f5f5f7;--card:#ffffffb8;--text:#111;--muted:#74747a;--accent:#0071e3;--green:#34c759;--red:#ff3b30;--border:#00000012}@media(prefers-color-scheme:dark){:root{--bg:#080809;--card:#1c1c1eb8;--text:#f5f5f7;--muted:#98989f;--border:#ffffff14}}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 10% 0%,#0071e31a,transparent 30%),var(--bg);color:var(--text);font-family:Inter,sans-serif;padding:30px}.wrap{width:min(1050px,100%);margin:auto}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px}h1{letter-spacing:-2px}.pill{font-size:11px;color:var(--muted)}.panel{padding:25px;border:1px solid var(--border);border-radius:25px;background:var(--card);backdrop-filter:blur(20px);margin-bottom:18px}.login{max-width:430px;margin:12vh auto}.input{width:100%;padding:14px;border:1px solid var(--border);border-radius:13px;background:transparent;color:var(--text);font:inherit;margin:8px 0 12px}.btn{border:0;border-radius:13px;padding:12px 16px;color:#fff;background:var(--accent);font-weight:700;cursor:pointer}.grid{display:grid;gap:15px}.item{display:flex;justify-content:space-between;gap:20px;align-items:center}.meta h3{margin:0 0 6px;font-size:16px}.meta p{margin:0;color:var(--muted);font-size:12px}.actions{display:flex;gap:8px}.approve,.reject,.download{border:0;border-radius:11px;padding:10px 12px;font-weight:700;font-size:11px;cursor:pointer;text-decoration:none}.approve{background:#34c7591c;color:#17883a}.reject{background:#ff3b3018;color:#c62820}.download{background:#0071e314;color:var(--accent)}.status{margin-top:12px;font-size:12px;color:var(--muted)}@media(max-width:650px){.item{align-items:stretch;flex-direction:column}.actions{width:100%}.actions>*{flex:1;text-align:center}}
+</style>
+</head>
+<body><main class="wrap">
+<div id="login" class="panel login"><h1>Admin</h1><p class="pill">Nur für Store-Administratoren.</p><input class="input" id="password" type="password" placeholder="Admin-Passwort"><button class="btn" id="loginBtn">Anmelden</button><div class="status" id="loginStatus"></div></div>
+<div id="app" hidden><div class="top"><div><h1>Überprüfung</h1><div class="pill" id="count"></div></div><button class="btn" id="logout">Abmelden</button></div><div id="list" class="grid"></div></div>
+</main>
+<script>
+const API="hello-world.avivehdddd-75f.workers.dev/"; // Nach dem Worker-Deploy ersetzen.
+let token=sessionStorage.getItem("adminToken");
+const login=document.querySelector("#login"),app=document.querySelector("#app"),list=document.querySelector("#list"),ls=document.querySelector("#loginStatus");
+function esc(s){return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;")}
+async function api(path,opt={}){opt.headers={...(opt.headers||{}),Authorization:"Bearer "+token};let r=await fetch(API+path,opt);let d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||"Fehler");return d}
+async function load(){try{let d=await api("/submissions");render(d.submissions||[])}catch(e){list.innerHTML=`<div class="panel">${esc(e.message)}</div>`}}
+function render(items){document.querySelector("#count").textContent=`${items.length} offene Einsendung${items.length===1?"":"en"}`;if(!items.length){list.innerHTML='<div class="panel">✓ Keine offenen Einsendungen.</div>';return}list.innerHTML=items.map(x=>`<div class="panel item"><div class="meta"><h3>${esc(x.name)} <span class="pill">· by ${esc(x.creator)}</span></h3><p>${esc(x.description)}</p><p>${esc(x.id)}</p></div><div class="actions"><a class="download" href="${API}/download/${encodeURIComponent(x.id)}" target="_blank">Datei</a><button class="approve" data-id="${esc(x.id)}">✓ Genehmigen</button><button class="reject" data-id="${esc(x.id)}">✕ Ablehnen</button></div></div>`).join("")}
+document.querySelector("#loginBtn").onclick=async()=>{try{if(API.includes("DEIN-WORKER"))throw Error("Worker-URL in admin/index.html eintragen.");let p=document.querySelector("#password").value;token=p;await api("/submissions");sessionStorage.setItem("adminToken",token);login.hidden=true;app.hidden=false;load()}catch(e){ls.textContent=e.message}}
+document.querySelector("#logout").onclick=()=>{sessionStorage.clear();location.reload()}
+list.onclick=async e=>{let id=e.target.dataset.id;if(!id)return;try{e.target.disabled=true;if(e.target.classList.contains("approve"))await api("/approve/"+encodeURIComponent(id),{method:"POST"});else await api("/reject/"+encodeURIComponent(id),{method:"POST"});load()}catch(err){alert(err.message)}};
+if(token&&!API.includes("DEIN-WORKER")){login.hidden=true;app.hidden=false;load()}
+</script>
+</body></html>
