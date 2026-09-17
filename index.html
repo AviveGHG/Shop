@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kurzbefehle Store</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+:root{--bg:#f5f5f7;--card:rgba(255,255,255,.68);--text:#111113;--muted:#737378;--accent:#0071e3;--accent2:#5856d6;--border:rgba(0,0,0,.07)}
+@media(prefers-color-scheme:dark){:root{--bg:#080809;--card:rgba(28,28,30,.7);--text:#f5f5f7;--muted:#98989f;--accent:#2997ff;--accent2:#7d7aff;--border:rgba(255,255,255,.08)}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);background:radial-gradient(circle at 10% 0%,#0071e31a,transparent 30%),radial-gradient(circle at 90% 10%,#5856d61c,transparent 28%),var(--bg);min-height:100vh;overflow-x:hidden}
+.bg{position:fixed;inset:0;z-index:-1;overflow:hidden}.orb{position:absolute;width:450px;height:450px;border-radius:50%;filter:blur(100px);opacity:.14;animation:float 13s ease-in-out infinite alternate}.o1{background:#0071e3;top:-230px;left:-160px}.o2{background:#5856d6;right:-230px;top:15%;animation-delay:-4s}.o3{background:#34c759;bottom:-280px;left:35%;animation-delay:-8s}@keyframes float{to{transform:translate(70px,40px) scale(1.12)}}
+nav,.wrap{width:min(1180px,calc(100% - 40px));margin:auto}nav{height:76px;display:flex;align-items:center;justify-content:space-between}.logo{display:flex;align-items:center;gap:10px;font-weight:800}.logo i{font-style:normal;width:40px;height:40px;display:grid;place-items:center;border-radius:12px;color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 8px 25px #0071e34d}.navlinks{display:flex;gap:9px}.navlinks a{padding:10px 14px;border:1px solid var(--border);border-radius:999px;background:var(--card);color:var(--muted);text-decoration:none;font-size:12px;font-weight:700;backdrop-filter:blur(20px)}
+.hero{text-align:center;margin:82px auto 66px;max-width:900px}.badge{display:inline-flex;gap:8px;align-items:center;padding:9px 14px;border:1px solid var(--border);border-radius:999px;background:var(--card);color:var(--accent);font-size:12px;font-weight:700;backdrop-filter:blur(20px);animation:down .7s both}.dot{width:7px;height:7px;border-radius:50%;background:#34c759;box-shadow:0 0 0 5px #34c7591f;animation:pulse 2s infinite}@keyframes pulse{50%{transform:scale(1.25)}}h1{font-size:clamp(44px,7vw,78px);line-height:.98;letter-spacing:-5px;margin:23px 0;background:linear-gradient(135deg,var(--text) 15%,var(--accent) 60%,var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;animation:up .8s .05s both}.hero p{max-width:650px;margin:auto;color:var(--muted);line-height:1.65;animation:up .8s .15s both}
+.actions{display:flex;justify-content:center;gap:12px;margin-top:28px;animation:up .8s .22s both}.primary,.secondary{padding:14px 19px;border-radius:15px;text-decoration:none;font-weight:700;font-size:13px}.primary{background:var(--accent);color:#fff;box-shadow:0 12px 30px #0071e34d}.secondary{border:1px solid var(--border);background:var(--card);color:var(--text);backdrop-filter:blur(20px)}
+.toolbar{display:flex;gap:14px;align-items:center;margin-bottom:24px}.search{position:relative;flex:1}.search span{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--muted)}input{font:inherit}.search input{width:100%;padding:15px 18px 15px 45px;border:1px solid var(--border);border-radius:16px;outline:0;background:var(--card);color:var(--text);backdrop-filter:blur(20px);transition:.25s}.search input:focus{border-color:var(--accent);box-shadow:0 0 0 4px #0071e31a}.count{color:var(--muted);font-size:12px;white-space:nowrap}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}.card{position:relative;overflow:hidden;min-height:330px;padding:27px;border:1px solid var(--border);border-radius:28px;background:var(--card);backdrop-filter:blur(25px);box-shadow:0 20px 60px #0000000d;opacity:0;transform:translateY(28px) scale(.97);animation:card .7s cubic-bezier(.16,1,.3,1) forwards;transition:.45s cubic-bezier(.16,1,.3,1)}.card:hover{transform:translateY(-8px) scale(1.015);box-shadow:0 35px 90px #0000001a;border-color:#0071e34d}.icon{width:66px;height:66px;display:grid;place-items:center;border-radius:20px;background:#ffffffb8;border:1px solid var(--border);font-size:31px;box-shadow:0 12px 30px #00000012;transition:.5s}.card:hover .icon{transform:translateY(-4px) rotate(-4deg) scale(1.07)}.title{font-size:20px;letter-spacing:-.6px;margin:22px 0 8px}.desc{color:var(--muted);font-size:14px;line-height:1.6}.creator{display:inline-flex;align-items:center;gap:7px;margin-top:14px;padding:6px 10px;border-radius:999px;background:#7f7f7f14;color:var(--muted);font-size:11px;font-weight:600}.avatar{width:19px;height:19px;display:grid;place-items:center;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-size:8px}.creator b{color:var(--text)}.download{display:flex;justify-content:center;align-items:center;gap:8px;margin-top:25px;padding:14px;border-radius:15px;background:var(--accent);color:#fff;text-decoration:none;font-size:14px;font-weight:700;box-shadow:0 10px 25px #0071e338;transition:.2s;overflow:hidden}.download:hover{transform:translateY(-2px);box-shadow:0 16px 35px #0071e34d}.download.success{background:#34c759}.empty{grid-column:1/-1;text-align:center;padding:80px 30px;border:1px solid var(--border);border-radius:28px;background:var(--card);color:var(--muted)}footer{width:min(1180px,calc(100% - 40px));margin:70px auto 0;padding:25px 0;border-top:1px solid var(--border);text-align:center;color:var(--muted);font-size:11px}@keyframes card{to{opacity:1;transform:none}}@keyframes up{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}@keyframes down{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:none}}
+@media(max-width:650px){nav,.wrap,footer{width:calc(100% - 30px)}.navlinks a:last-child{display:none}.hero{margin-top:55px}h1{letter-spacing:-3px}.actions{flex-direction:column}.toolbar{flex-direction:column;align-items:stretch}.count{padding-left:3px}.grid{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="bg"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div></div>
+<nav><div class="logo"><i>⌘</i>Kurzbefehle Store</div><div class="navlinks"><a href="upload.html">＋ Hochladen</a><a href="admin/">Admin</a></div></nav>
+<header class="hero">
+<div class="badge"><span class="dot"></span> Community Store</div>
+<h1>Deine Kurzbefehle.<br>Neu gedacht.</h1>
+<p>Entdecke praktische Kurzbefehle für deinen Alltag. Lade sie herunter oder reiche deinen eigenen Kurzbefehl zur Prüfung ein.</p>
+<div class="actions"><a class="primary" href="upload.html">Kurzbefehl hochladen →</a><a class="secondary" href="#store">Store entdecken</a></div>
+</header>
+<main class="wrap" id="store">
+<div class="toolbar"><div class="search"><span>⌕</span><input id="search" placeholder="Kurzbefehle durchsuchen..." autocomplete="off"></div><div class="count" id="count">Lade...</div></div>
+<div class="grid" id="grid"><div class="empty">⌘<br><br>Store wird geladen...</div></div>
+</main>
+<footer>© 2026 Kurzbefehle Store · Für iPhone & iPad</footer>
+<script>
+let files=[];
+const grid=document.querySelector("#grid"), search=document.querySelector("#search"), count=document.querySelector("#count");
+const esc=s=>String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+const initials=s=>{let p=s.trim().split(/\s+/);return (p[0]?.[0]||"U")+(p.length>1?p.at(-1)[0]:"")};
+function render(q=""){
+ const f=files.filter(x=>x.toLowerCase().includes(q.toLowerCase().trim())); grid.innerHTML="";
+ if(!f.length){grid.innerHTML='<div class="empty">⌕<br><br><b>Keine Kurzbefehle gefunden</b><br>Versuche einen anderen Suchbegriff.</div>';count.textContent="Keine Ergebnisse";return}
+ f.forEach((file,i)=>{
+  let p=file.replace(/\.shortcut$/i,"").split(" - ");
+  let name=p[0]?.trim()||"Unbenannt", desc=p[1]?.trim()||"Klicke zum Laden.", emoji=p[2]?.trim()||"⚙️", creator=p[3]?.trim()||"Unbekannt";
+  let c=document.createElement("article");c.className="card";c.style.animationDelay=Math.min(i*70,600)+"ms";
+  c.innerHTML=`<div><div class="icon">${esc(emoji)}</div><h2 class="title">${esc(name)}</h2><p class="desc">${esc(desc)}</p><div class="creator"><span class="avatar">${esc(initials(creator))}</span>by <b>${esc(creator)}</b></div></div><a class="download" href="shortcuts/${encodeURIComponent(file)}" download="${esc(file)}">Laden <span>↓</span></a>`;
+  let b=c.querySelector(".download");b.onclick=()=>{b.innerHTML="Geladen ✓";b.classList.add("success");setTimeout(()=>{b.innerHTML="Laden <span>↓</span>";b.classList.remove("success")},1800)};grid.appendChild(c)
+ });count.textContent=`${f.length} ${f.length===1?"Kurzbefehl":"Kurzbefehle"}`;
+}
+async function load(){try{let r=await fetch("shortcuts.json",{cache:"no-cache"});if(!r.ok)throw 0;files=await r.json();if(!Array.isArray(files))throw 0;render()}catch(e){grid.innerHTML='<div class="empty">⚠️<br><br><b>Store konnte nicht geladen werden.</b><br>Prüfe shortcuts.json.</div>';count.textContent="Fehler"}}
+search.oninput=e=>render(e.target.value);load();
+</script>
+</body>
+</html>
