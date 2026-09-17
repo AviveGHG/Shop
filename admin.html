@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin Dashboard</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+body{font-family:'Inter',sans-serif;background:#080809;color:#f5f5f7;margin:0;padding:30px;display:grid;place-items:center;min-height:90vh}
+.card{background:rgba(28,28,30,.7);border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:30px;width:100%;max-width:480px;backdrop-filter:blur(20px)}
+h1{font-size:22px;margin-top:0;color:#ff453a}
+label{display:block;font-size:12px;color:#98989f;margin:14px 0 6px;font-weight:600}
+input,select{width:100%;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:#1c1c1e;color:#fff;font:inherit;box-sizing:border-box}
+.btn-ban{background:#ff453a;color:#fff;border:0;padding:14px;border-radius:12px;font-weight:700;cursor:pointer;margin-top:20px;width:100%;font-size:14px}
+.btn-warn{background:#ff9f0a;color:#fff;border:0;padding:14px;border-radius:12px;font-weight:700;cursor:pointer;margin-top:10px;width:100%;font-size:14px}
+.status{margin-top:15px;font-size:13px;text-align:center}
+</style>
+</head>
+<body>
+
+<div class="card">
+ <h1>🛡️ Admin Control Panel</h1>
+ 
+ <label for="targetUser">Benutzername:</label>
+ <input id="targetUser" placeholder="z. B. Gamer123" required>
+
+ <label for="reason">Grund / Nachricht:</label>
+ <input id="reason" placeholder="z. B. Spam oder Verstoß gegen Regeln" required>
+
+ <button class="btn-warn" onclick="executeAction('warn')">⚠️ Verwarnung aussprechen</button>
+ <button class="btn-ban" onclick="executeAction('ban')">🚫 Benutzer BANNEN</button>
+
+ <div id="statusMsg" class="status"></div>
+</div>
+
+<script>
+// GH CONFIG
+const GH_USER = "DEIN_GITHUB_USERNAME";
+const GH_REPO = "DEIN_REPO_NAME";
+const GH_TOKEN = "DEIN_GITHUB_PERSONAL_ACCESS_TOKEN"; 
+const FILE_PATH = "bans.json";
+
+async function executeAction(type) {
+ const username = document.getElementById("targetUser").value.trim();
+ const reason = document.getElementById("reason").value.trim() || "Kein Grund angegeben";
+ const status = document.getElementById("statusMsg");
+
+ if(!username){ alert("Bitte Benutzernamen eingeben!"); return; }
+
+ status.style.color = "#0071e3";
+ status.textContent = "Speichere in GitHub...";
+
+ try {
+  const url = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${FILE_PATH}`;
+  let sha = "";
+  let banData = {};
+
+  const res = await fetch(url, { headers: { "Authorization": `token ${GH_TOKEN}` } });
+  if(res.ok){
+   const data = await res.json();
+   sha = data.sha;
+   banData = JSON.parse(atob(data.content));
+  }
+
+  // Eintrag aktualisieren / erstellen
+  banData[username.toLowerCase()] = {
+   type: type, // 'ban' oder 'warn'
+   reason: reason,
+   date: new Date().toISOString()
+  };
+
+  const updatedContent = btoa(JSON.stringify(banData, null, 2));
+
+  const saveRes = await fetch(url, {
+   method: "PUT",
+   headers: {
+    "Authorization": `token ${GH_TOKEN}`,
+    "Content-Type": "application/json"
+   },
+   body: JSON.stringify({
+    message: `${type.toUpperCase()} für ${username}`,
+    content: updatedContent,
+    sha: sha || undefined
+   })
+  });
+
+  if(saveRes.ok){
+   status.style.color = "#34c759";
+   status.textContent = `Erfolgreich: ${username} wurde ${type === 'ban' ? 'GEBANNT' : 'VERWARNT'}!`;
+  } else {
+   throw new Error();
+  }
+ } catch(err) {
+  status.style.color = "#ff453a";
+  status.textContent = "Fehler beim Speichern!";
+ }
+}
+</script>
+</body>
+</html>
