@@ -13,7 +13,7 @@
 <div id="app" hidden><div class="top"><div><h1>Überprüfung</h1><div class="pill" id="count"></div></div><button class="btn" id="logout">Abmelden</button></div><div id="list" class="grid"></div></div>
 </main>
 <script>
-const API="https://hello-world.avivehdddd-75f.workers.dev/"; // Nach dem Worker-Deploy ersetzen.
+const API="https://hello-world.avivehdddd-75f.workers.dev"; // Ohne Slash am Ende
 let token=sessionStorage.getItem("adminToken");
 const login=document.querySelector("#login"),app=document.querySelector("#app"),list=document.querySelector("#list"),ls=document.querySelector("#loginStatus");
 function esc(s){return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;")}
