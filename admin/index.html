@@ -2,199 +2,215 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Admin-Bereich</title>
+<title>Admin Dashboard</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
-body{font-family:'Inter',sans-serif;background:#080809;color:#f5f5f7;margin:0;padding:30px}
-.wrap{max-width:900px;margin:auto}
-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:25px}
-h1{font-size:26px;margin:0;display:flex;align-items:center;gap:10px}
-.tabs{display:flex;gap:10px;margin-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1);padding-bottom:12px}
-.tab-btn{background:transparent;border:0;color:#98989f;font-weight:600;padding:10px 16px;border-radius:10px;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:14px;transition:.2s}
-.tab-btn.active{background:#1c1c1e;color:#fff}
-.tab-content{display:none}
-.tab-content.active{display:block}
-.card{background:rgba(28,28,30,.7);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:22px;margin-bottom:20px;backdrop-filter:blur(20px)}
-label{display:block;font-size:12px;color:#98989f;margin:12px 0 4px;font-weight:600}
-input,textarea,select{width:100%;padding:11px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:#1c1c1e;color:#fff;font:inherit;box-sizing:border-box}
-textarea{resize:vertical;height:65px}
-button.submit{background:#0071e3;color:#fff;border:0;padding:13px 20px;border-radius:10px;font-weight:700;cursor:pointer;margin-top:18px;width:100%;transition:.2s}
-button.submit:hover{background:#2997ff}
-.status{margin-top:10px;font-size:13px;color:#34c759;display:none;text-align:center}
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin-bottom:20px}
-.stat-box{background:#1c1c1e;padding:15px;border-radius:12px;border:1px solid rgba(255,255,255,.05);text-align:center}
-.stat-box h3{margin:0;font-size:28px;color:#0071e3}
-.stat-box p{margin:5px 0 0;font-size:12px;color:#98989f}
-.lock-banner{background:#ff3b3022;border:1px solid #ff3b3044;color:#ff453a;padding:12px;border-radius:12px;font-size:13px;display:flex;align-items:center;gap:10px;margin-bottom:15px}
+@import url('https://googleapis.com');
+body{font-family:'Inter',sans-serif;background:#080809;color:#f5f5f7;margin:0;padding:30px;display:flex;flex-direction:column;align-items:center;gap:20px;min-height:90vh}
+.card{background:rgba(28,28,30,.7);border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:30px;width:100%;max-width:480px;backdrop-filter:blur(20px);box-sizing:border-box}
+h1{font-size:22px;margin-top:0;color:#ff453a}
+label{display:block;font-size:12px;color:#98989f;margin:14px 0 6px;font-weight:600}
+input,select{width:100%;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:#1c1c1e;color:#fff;font:inherit;box-sizing:border-box}
+.btn-ban{background:#ff453a;color:#fff;border:0;padding:14px;border-radius:12px;font-weight:700;cursor:pointer;margin-top:20px;width:100%;font-size:14px}
+.btn-warn{background:#ff9f0a;color:#fff;border:0;padding:14px;border-radius:12px;font-weight:700;cursor:pointer;margin-top:10px;width:100%;font-size:14px}
+.status{margin-top:15px;font-size:13px;text-align:center}
+
+/* Styles für die Shortcut-Liste */
+.shortcut-list{margin-top:15px;max-height:250px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-right:5px}
+.shortcut-item{display:flex;justify-content:between;align-items:center;background:#1c1c1e;padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.05);gap:10px}
+.shortcut-name{flex:1;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#e5e5ea}
+.btn-delete{background:#ff453a;color:#fff;border:0;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;transition:0.2s}
+.btn-delete:hover{background:#ff3b30}
+.loader{text-align:center;color:#98989f;font-size:13px;padding:10px}
 </style>
 </head>
 <body>
-<div class="wrap">
- <header>
-  <h1>📊 Admin Panel</h1>
-  <a href="../" style="color:#0071e3;text-decoration:none;font-weight:600;font-size:13px">← Zum Store</a>
- </header>
 
- <!-- TAB NAVIGATION -->
- <div class="tabs">
-  <button class="tab-btn active" onclick="switchTab('dashboard')">📖 Dashboard</button>
-  <button class="tab-btn" onclick="switchTab('edit')">✏️ Kurzbefehle Bearbeiten</button>
-  <button class="tab-btn" onclick="switchTab('access')">🔒 Sperren & Berechtigungen</button>
+<!-- Bereich 1: Benutzerverwaltung -->
+<div class="card">
+ <h1>🛡️ Admin Control Panel</h1>
+ 
+ <label for="targetUser">Benutzername:</label>
+ <input id="targetUser" placeholder="z. B. Gamer123" required>
+
+ <label for="reason">Grund / Nachricht:</label>
+ <input id="reason" placeholder="z. B. Spam oder Verstoß gegen Regeln" required>
+
+ <button class="btn-warn" onclick="executeAction('warn')">⚠️ Verwarnung aussprechen</button>
+ <button class="btn-ban" onclick="executeAction('ban')">🚫 Benutzer BANNEN</button>
+
+ <div id="statusMsg" class="status"></div>
+</div>
+
+<!-- Bereich 2: NEU - Kurzbefehle verwalten -->
+<div class="card">
+ <h1 style="color: #0071e3;">⌘ Kurzbefehle verwalten</h1>
+ <div id="shortcutStatus" class="status" style="margin-bottom: 10px;"></div>
+ <div class="shortcut-list" id="shortcutContainer">
+  <div class="loader">Kurzbefehle werden geladen...</div>
  </div>
-
- <!-- TAB 1: DASHBOARD -->
- <div id="tab-dashboard" class="tab-content active">
-  <div class="card">
-   <h2>📖 Dashboard Übersicht</h2>
-   <p style="color:#98989f;font-size:14px">Willkommen im Admin-Bereich. Hier hast du die wichtigsten Statistiken auf einen Blick.</p>
-   
-   <div class="stats-grid">
-    <div class="stat-box"><h3 id="statTotal">0</h3><p>Gesamte Kurzbefehle</p></div>
-    <div class="stat-box"><h3 id="statOverridden">0</h3><p>Manuell Angepasst</p></div>
-    <div class="stat-box"><h3>Aktiv</h3><p>System-Status</p></div>
-   </div>
-  </div>
- </div>
-
- <!-- TAB 2: KURZBEFEHLE BEARBEITEN -->
- <div id="tab-edit" class="tab-content">
-  <div class="card">
-   <h2>✏️ Name, Beschreibung & Icon anpassen</h2>
-   <label for="shortcutSelect">Kurzbefehl auswählen:</label>
-   <select id="shortcutSelect"><option>Lade Kurzbefehle...</option></select>
-   
-   <label for="inputName">Name ändern:</label>
-   <input id="inputName" placeholder="Z. B. Auto Clean">
-   
-   <label for="inputDesc">Beschreibung ändern:</label>
-   <textarea id="inputDesc" placeholder="Was macht der Kurzbefehl?"></textarea>
-   
-   <label for="inputEmoji">Haupt-Icon / Emoji:</label>
-   <input id="inputEmoji" placeholder="Z. B. 🧹 oder ⚡">
-   
-   <label for="inputCreator">Ersteller:</label>
-   <input id="inputCreator" placeholder="Z. B. jonas">
-   
-   <label for="inputAvatar">Profilbild / Avatar (Bild-URL oder Initialen/Emoji):</label>
-   <input id="inputAvatar" placeholder="Z. B. https://site.de/avatar.jpg oder 🚀">
-   
-   <button class="submit" id="saveBtn">Änderungen Speichern</button>
-   <div class="status" id="status">Änderungen wurden erfolgreich gespeichert!</div>
-  </div>
- </div>
-
- <!-- TAB 3: SPPERREN & BERECHTIGUNGEN -->
- <div id="tab-access" class="tab-content">
-  <div class="card">
-   <h2>🔒 Zugriff & Sperren verwalten</h2>
-   <div class="lock-banner">
-    <span>⚠️</span>
-    <div>Sperre Kurzbefehle oder bestimmte Aktionen für normale Nutzer.</div>
-   </div>
-   
-   <label for="lockSelect">Kurzbefehl zum Sperren wählen:</label>
-   <select id="lockSelect"><option>Lade Kurzbefehle...</option></select>
-   
-   <label style="display:flex;align-items:center;gap:10px;margin-top:15px;cursor:pointer;color:#fff">
-    <input type="checkbox" id="checkLock" style="width:auto"> <b>Kurzbefehl im Store sperren (Verstecken/Deaktivieren)</b>
-   </label>
-
-   <button class="submit" id="saveLockBtn">Sperr-Status Speichern</button>
-   <div class="status" id="statusLock">Sperr-Einstellungen gespeichert!</div>
-  </div>
- </div>
-
 </div>
 
 <script>
-let files = [], overrides = {};
-const sel = document.getElementById("shortcutSelect");
-const lockSel = document.getElementById("lockSelect");
+// GH CONFIG
+const GH_USER = "DEIN_GITHUB_USERNAME";
+const GH_REPO = "DEIN_REPO_NAME";
+const GH_TOKEN = "DEIN_GITHUB_PERSONAL_ACCESS_TOKEN"; 
+const FILE_PATH = "bans.json";
+const SHORTCUTS_PATH = "shortcuts.json"; // Pfad zur Shortcuts-Datei
 
-function switchTab(tabId){
- document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
- document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
- event.currentTarget.classList.add('active');
- document.getElementById('tab-' + tabId).classList.add('active');
-}
+// Funktion für Ban/Warn (bestehend)
+async function executeAction(type) {
+ const username = document.getElementById("targetUser").value.trim();
+ const reason = document.getElementById("reason").value.trim() || "Kein Grund angegeben";
+ const status = document.getElementById("statusMsg");
 
-async function init(){
+ if(!username){ alert("Bitte Benutzernamen eingeben!"); return; }
+
+ status.style.color = "#0071e3";
+ status.textContent = "Speichere in GitHub...";
+
  try {
-  const rFiles = await fetch("../shortcuts.json");
-  files = await rFiles.json();
-  
-  const rOver = await fetch("../overrides.json").catch(()=>({ok:false}));
-  if(rOver.ok) overrides = await rOver.json();
+  const url = `https://github.com{GH_USER}/${GH_REPO}/contents/${FILE_PATH}`;
+  let sha = "";
+  let banData = {};
 
-  // Stats
-  document.getElementById("statTotal").textContent = files.length;
-  document.getElementById("statOverridden").textContent = Object.keys(overrides).length;
+  const res = await fetch(url, { headers: { "Authorization": `token ${GH_TOKEN}` } });
+  if(res.ok){
+   const data = await res.json();
+   sha = data.sha;
+   banData = JSON.parse(atob(data.content));
+  }
 
-  sel.innerHTML = files.map(f => `<option value="${f}">${f}</option>`).join("");
-  lockSel.innerHTML = files.map(f => `<option value="${f}">${f}</option>`).join("");
-  
-  loadFields();
-  loadLockFields();
- } catch(e){}
-}
+  banData[username.toLowerCase()] = {
+   type: type,
+   reason: reason,
+   date: new Date().toISOString()
+  };
 
-function loadFields(){
- const file = sel.value;
- const ov = overrides[file] || {};
- let parts = file.replace(/\.shortcut$/i,"").split(" - ");
- 
- document.getElementById("inputName").value = ov.name || parts[0] || "";
- document.getElementById("inputDesc").value = ov.desc || parts[1] || "";
- document.getElementById("inputEmoji").value = ov.emoji || parts[2] || "⚙️";
- document.getElementById("inputCreator").value = ov.creator || parts[3] || "Unbekannt";
- document.getElementById("inputAvatar").value = ov.avatar || "";
-}
+  const updatedContent = btoa(JSON.stringify(banData, null, 2));
 
-function loadLockFields(){
- const file = lockSel.value;
- const ov = overrides[file] || {};
- document.getElementById("checkLock").checked = !!ov.locked;
-}
-
-sel.onchange = loadFields;
-lockSel.onchange = loadLockFields;
-
-document.getElementById("saveBtn").onclick = async () => {
- const file = sel.value;
- overrides[file] = overrides[file] || {};
- Object.assign(overrides[file], {
-  name: document.getElementById("inputName").value,
-  desc: document.getElementById("inputDesc").value,
-  emoji: document.getElementById("inputEmoji").value,
-  creator: document.getElementById("inputCreator").value,
-  avatar: document.getElementById("inputAvatar").value
- });
- await saveOverrides("status");
-};
-
-document.getElementById("saveLockBtn").onclick = async () => {
- const file = lockSel.value;
- overrides[file] = overrides[file] || {};
- overrides[file].locked = document.getElementById("checkLock").checked;
- await saveOverrides("statusLock");
-};
-
-async function saveOverrides(statusId){
- try {
-  await fetch("save_overrides.php", {
-   method: "POST",
-   headers: {"Content-Type": "application/json"},
-   body: JSON.stringify(overrides)
+  const saveRes = await fetch(url, {
+   method: "PUT",
+   headers: {
+    "Authorization": `token ${GH_TOKEN}`,
+    "Content-Type": "application/json"
+   },
+   body: JSON.stringify({
+    message: `${type.toUpperCase()} für ${username}`,
+    content: updatedContent,
+    sha: sha || undefined
+   })
   });
-  const st = document.getElementById(statusId);
-  st.style.display = "block";
-  setTimeout(()=> st.style.display = "none", 2000);
- } catch(e){
-  alert("Fehler beim Speichern!");
+
+  if(saveRes.ok){
+   status.style.color = "#34c759";
+   status.textContent = `Erfolgreich: ${username} wurde ${type === 'ban' ? 'GEBANNT' : 'VERWARNT'}!`;
+  } else {
+   throw new Error();
+  }
+ } catch(err) {
+  status.style.color = "#ff453a";
+  status.textContent = "Fehler beim Speichern!";
  }
 }
 
-init();
+// --- NEU: FUNKTIONEN FÜR SHORTCUTS LÖSCHEN ---
+
+// Hilfsfunktion zum Escapen von HTML-Code
+const esc = s => String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+
+// Lädt die Liste der Shortcuts direkt aus GitHub, um das aktuelle SHA zu haben
+async function loadShortcuts() {
+ const container = document.getElementById("shortcutContainer");
+ const status = document.getElementById("shortcutStatus");
+ 
+ try {
+  const url = `https://github.com{GH_USER}/${GH_REPO}/contents/${SHORTCUTS_PATH}`;
+  const res = await fetch(url, { headers: { "Authorization": `token ${GH_TOKEN}` }, cache: "no-cache" });
+  
+  if(!res.ok) throw new Error("Konnte shortcuts.json nicht laden");
+  
+  const data = await res.json();
+  const currentSha = data.sha;
+  const files = JSON.parse(atob(data.content));
+  
+  container.innerHTML = "";
+  
+  if(files.length === 0) {
+   container.innerHTML = '<div class="loader">Keine Kurzbefehle vorhanden.</div>';
+   return;
+  }
+  
+  files.forEach(file => {
+   const item = document.createElement("div");
+   item.className = "shortcut-item";
+   
+   // Extrahiere den Namen leserlich aus dem Dateinamen (analog zur Index-Logik)
+   let cleanName = file.replace(/\.shortcut\$/i,"").split(" - ")[0] || file;
+   
+   item.innerHTML = `
+    <span class="shortcut-name" title="${esc(file)}">${esc(cleanName)}</span>
+    <button class="btn-delete" onclick="deleteShortcut('${esc(file)}', '${currentSha}')">Löschen</button>
+   `;
+   container.appendChild(item);
+  });
+ } catch (err) {
+  container.innerHTML = '<div class="loader" style="color:#ff453a;">Fehler beim Laden der Shortcuts.</div>';
+ }
+}
+
+// Löscht den ausgewählten Shortcut aus dem Array und pusht es zu GitHub
+async function deleteShortcut(fileName, currentSha) {
+ if(!confirm(`Möchtest du den Kurzbefehl "${fileName}" wirklich löschen?`)) return;
+ 
+ const status = document.getElementById("shortcutStatus");
+ status.style.color = "#0071e3";
+ status.textContent = "Lösche Kurzbefehl...";
+ 
+ try {
+  const url = `https://github.com{GH_USER}/${GH_REPO}/contents/${SHORTCUTS_PATH}`;
+  
+  // 1. Neueste Version holen (falls sich das SHA geändert hat)
+  const res = await fetch(url, { headers: { "Authorization": `token ${GH_TOKEN}` }, cache: "no-cache" });
+  if(!res.ok) throw new Error();
+  
+  const data = await res.json();
+  let files = JSON.parse(atob(data.content));
+  
+  // 2. Eintrag aus dem Array herausfiltern
+  files = files.filter(f => f !== fileName);
+  
+  // 3. Zurück zu GitHub senden
+  const updatedContent = btoa(JSON.stringify(files, null, 2));
+  const saveRes = await fetch(url, {
+   method: "PUT",
+   headers: {
+    "Authorization": `token ${GH_TOKEN}`,
+    "Content-Type": "application/json"
+   },
+   body: JSON.stringify({
+    message: `Kurzbefehl gelöscht: ${fileName}`,
+    content: updatedContent,
+    sha: data.sha
+   })
+  });
+  
+  if(saveRes.ok) {
+   status.style.color = "#34c759";
+   status.textContent = "Kurzbefehl erfolgreich gelöscht!";
+   // Liste neu laden
+   loadShortcuts();
+  } else {
+   throw new Error();
+  }
+ } catch (err) {
+  status.style.color = "#ff453a";
+  status.textContent = "Fehler beim Löschen!";
+ }
+}
+
+// Initiales Laden beim Aufrufen der Seite
+loadShortcuts();
 </script>
 </body>
 </html>
